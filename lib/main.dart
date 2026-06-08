@@ -1,164 +1,179 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MyWebsite());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyWebsite extends StatelessWidget {
+  const MyWebsite({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '이의현',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true),
-      home: const ProfilePage(),
+      theme: ThemeData.dark(),
+      home: const HomePage(),
     );
   }
 }
 
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final isMobile = width < 700;
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 50),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1000),
-              child: isMobile ? const MobileLayout() : const DesktopLayout(),
+      backgroundColor: const Color(0xFF222222),
+      body: Stack(
+        children: [
+          Center(
+            child: Opacity(
+              opacity: 0.12,
+              child: Image.asset(
+                'assets/kyunghee_rogo.png',
+                width: width * 0.7,
+                fit: BoxFit.contain,
+              ),
             ),
           ),
-        ),
+
+          SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 20,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AboutPage(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          'About',
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                Expanded(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Welcome',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: width < 600 ? 60 : 120,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          Text(
+                            '이의현의 페이지에 오신 것을 환영합니다',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: width < 600 ? 18 : 28,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class DesktopLayout extends StatelessWidget {
-  const DesktopLayout({super.key});
+class AboutPage extends StatelessWidget {
+  const AboutPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Expanded(flex: 2, child: ProfileCard()),
-        const SizedBox(width: 30),
-        Expanded(
-          flex: 3,
-          child: Column(
-            children: const [
-              InfoCard(
-                title: '기본 정보',
-                content: ['이름 : 이의현', '생년월일 : 2005.09.21', '경희대학교 응용수학과 25학번'],
-              ),
-              SizedBox(height: 20),
-              InfoCard(title: '활동', content: ['고품 26-1 총무']),
-              SizedBox(height: 20),
-              InfoCard(
-                title: '연락처',
-                content: [
-                  'Instagram : @dldmlhyn',
-                  '전화번호 : 010-2321-9857',
-                  '이메일 : uyhyun1234@gmail.com',
-                ],
-              ),
-            ],
-          ),
+  Widget infoTile(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: const Color(0xFF333333),
+          borderRadius: BorderRadius.circular(12),
         ),
-      ],
-    );
-  }
-}
-
-class MobileLayout extends StatelessWidget {
-  const MobileLayout({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      children: [
-        ProfileCard(),
-        SizedBox(height: 20),
-        InfoCard(
-          title: '기본 정보',
-          content: ['이름 : 이의현', '생년월일 : 2005.09.21', '경희대학교 응용수학과 25학번'],
-        ),
-        SizedBox(height: 20),
-        InfoCard(title: '활동', content: ['고품 26-1 총무']),
-        SizedBox(height: 20),
-        InfoCard(
-          title: '연락처',
-          content: [
-            'Instagram : @dldmlhyn',
-            '전화번호 : 010-2321-9857',
-            '이메일 : uyhyun1234@gmail.com',
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class ProfileCard extends StatelessWidget {
-  const ProfileCard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      child: Padding(
-        padding: const EdgeInsets.all(30),
-        child: Column(
-          children: [
-            const CircleAvatar(radius: 60, child: Icon(Icons.person, size: 60)),
-            const SizedBox(height: 20),
-            Text('이의현', style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: 10),
-            const Text(
-              'Kyung Hee University\nApplied Mathematics',
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class InfoCard extends StatelessWidget {
-  final String title;
-  final List<String> content;
-
-  const InfoCard({super.key, required this.title, required this.content});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 15),
-            ...content.map(
-              (e) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Text(e),
-              ),
+            Text(
+              title,
+              style: const TextStyle(color: Colors.white54, fontSize: 14),
             ),
+            const SizedBox(height: 5),
+            Text(value, style: const TextStyle(fontSize: 20)),
           ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF222222),
+
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF222222),
+        title: const Text('About'),
+      ),
+
+      body: Center(
+        child: SingleChildScrollView(
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 800),
+            padding: const EdgeInsets.all(30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '이의현',
+                  style: TextStyle(fontSize: 42, fontWeight: FontWeight.bold),
+                ),
+
+                const SizedBox(height: 30),
+
+                infoTile('생년월일', '2005년 09월 21일'),
+
+                infoTile('대학교', '경희대학교 응용수학과 25학번'),
+
+                infoTile('전화번호', '010-2321-9857'),
+
+                infoTile('Instagram', '@dldmlhyn'),
+
+                infoTile('E-Mail', 'uyhyun1234@gmail.com'),
+              ],
+            ),
+          ),
         ),
       ),
     );
