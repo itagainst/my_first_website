@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const MyWebsite());
@@ -18,8 +19,28 @@ class MyWebsite extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  double opacity = 0;
+  double offset = 50;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(const Duration(milliseconds: 300), () {
+      setState(() {
+        opacity = 1;
+        offset = 0;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +52,10 @@ class HomePage extends StatelessWidget {
         children: [
           Center(
             child: Opacity(
-              opacity: 0.12,
+              opacity: 0.22,
               child: Image.asset(
                 'assets/kyunghee_rogo.png',
-                width: width * 0.7,
+                width: width * 1.8,
                 fit: BoxFit.contain,
               ),
             ),
@@ -51,18 +72,26 @@ class HomePage extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const AboutPage(),
+                      MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: TextButton(
+                          style: ButtonStyle(
+                            overlayColor: WidgetStateProperty.all(
+                              Colors.white10,
                             ),
-                          );
-                        },
-                        child: const Text(
-                          'About',
-                          style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const AboutPage(),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            'About',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
                         ),
                       ),
                     ],
@@ -71,31 +100,39 @@ class HomePage extends StatelessWidget {
 
                 Expanded(
                   child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Welcome',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: width < 600 ? 60 : 120,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                    child: AnimatedOpacity(
+                      duration: const Duration(seconds: 2),
+                      opacity: opacity,
+                      child: AnimatedContainer(
+                        duration: const Duration(seconds: 2),
+                        transform: Matrix4.translationValues(0, offset, 0),
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Welcome',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: width < 600 ? 70 : 140,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
 
-                          const SizedBox(height: 20),
+                              const SizedBox(height: 20),
 
-                          Text(
-                            '이의현의 페이지에 오신 것을 환영합니다',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: width < 600 ? 18 : 28,
-                              color: Colors.white70,
-                            ),
+                              Text(
+                                '이의현의 페이지에 오신 것을 환영합니다',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: width < 600 ? 18 : 28,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
@@ -112,29 +149,47 @@ class HomePage extends StatelessWidget {
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
 
-  Widget infoTile(String title, String value) {
+  Widget infoTile(String title, String value, {VoidCallback? onTap}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: const Color(0xFF333333),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(color: Colors.white54, fontSize: 14),
+      child: MouseRegion(
+        cursor: onTap != null ? SystemMouseCursors.click : MouseCursor.defer,
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: const Color(0xFF333333),
+              borderRadius: BorderRadius.circular(12),
             ),
-            const SizedBox(height: 5),
-            Text(value, style: const TextStyle(fontSize: 20)),
-          ],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(color: Colors.white54, fontSize: 14),
+                ),
+                const SizedBox(height: 5),
+                Text(value, style: const TextStyle(fontSize: 20)),
+              ],
+            ),
+          ),
         ),
       ),
     );
+  }
+
+  Future<void> openInstagram() async {
+    final uri = Uri.parse('https://instagram.com/dldmlhyn');
+
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  Future<void> sendEmail() async {
+    final uri = Uri.parse('mailto:uyhyun1234@gmail.com');
+
+    await launchUrl(uri);
   }
 
   @override
@@ -168,9 +223,9 @@ class AboutPage extends StatelessWidget {
 
                 infoTile('전화번호', '010-2321-9857'),
 
-                infoTile('Instagram', '@dldmlhyn'),
+                infoTile('Instagram', '@dldmlhyn', onTap: openInstagram),
 
-                infoTile('E-Mail', 'uyhyun1234@gmail.com'),
+                infoTile('E-Mail', 'uyhyun1234@gmail.com', onTap: sendEmail),
               ],
             ),
           ),
